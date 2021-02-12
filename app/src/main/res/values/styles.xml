@@ -1,0 +1,14 @@
+<resources>
+
+<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+</style>
+
+<style name="fabStyle" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
+    <item name="android:background">@drawable/fab_style</item>
+    <item name="backgroundTint">#1F1F1F</item>
+</style>
+
+
+
+</resources>
