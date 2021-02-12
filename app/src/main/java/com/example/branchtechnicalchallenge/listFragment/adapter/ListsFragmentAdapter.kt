@@ -1,5 +1,6 @@
 package com.example.branchtechnicalchallenge.listFragment.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -11,18 +12,20 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.Lists
+import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
 import com.example.branchtechnicalchallenge.listFragment.viewModel.ListsViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context, var viewModel: ListsViewModel): RecyclerView.Adapter<ListsFragmentAdapter.ListViewHolder>() {
+class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context, var viewModel: ListsViewModel, var binding: FragmentListsBinding): RecyclerView.Adapter<ListsFragmentAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_item_view, parent, false)
@@ -30,7 +33,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        holder.bind(lists[position], contextin, viewModel, position)
+        holder.bind(lists[position], contextin, viewModel, position, binding)
     }
 
     override fun getItemCount(): Int {
@@ -39,11 +42,17 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
 
     class ListViewHolder(var view: View): RecyclerView.ViewHolder(view.rootView) {
 
-        fun bind(list: Lists, context: Context, viewModel: ListsViewModel, position: Int) {
+        @SuppressLint("SimpleDateFormat")
+        fun bind(list: Lists, context: Context, viewModel: ListsViewModel, position: Int, binding: FragmentListsBinding) {
             itemView.findViewById<TextView>(R.id.title).text = list.title
+            val simpleDateFormat = SimpleDateFormat("MM/dd/yyyy")
+            val date = Date(list.timecreated)
+            val time: String = simpleDateFormat.format(date)
+            itemView.findViewById<TextView>(R.id.time).text = "Created " + time
+
 
             itemView.setOnLongClickListener{
-                val alert = AlertDialog.Builder(context)
+                AlertDialog.Builder(context)
                         .setTitle("Are you sure you want to delete this list?")
                         .setPositiveButton("Yes"){ _, _ ->
                             viewModel.deleteLists(list, position)
@@ -53,7 +62,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
             }
 
             itemView.setOnClickListener {
-                var bundle = Bundle()
+                val bundle = Bundle()
                 bundle.putSerializable("list", list)
                 view.findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
             }
@@ -66,7 +75,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                 builder.setTitle("Edit List Name")
 
                 // dialog message view
-                val constraintLayout = context?.let { it1 -> getEditTextLayout(it1) }
+                val constraintLayout = context.let { it1 -> getEditTextLayout(it1) }
                 builder.setView(constraintLayout)
 
                 val textInputLayout = constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
@@ -76,6 +85,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                 builder.setPositiveButton("Submit"){ _, _ -> //set what should happen when negative button is clicked
                     if (textInputEditText != null) {
                         viewModel.updateList(textInputEditText.text.toString(), position)
+                        binding.listRecycler.adapter?.notifyDataSetChanged()
                     }
                 }
 
@@ -94,38 +104,36 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                 dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
 
                 // edit text text change listener
-                if (textInputEditText != null) {
-                    textInputEditText.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                        }
+                textInputEditText?.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
 
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int,
-                                                       p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int,
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int,
                                                    p2: Int, p3: Int) {
-                            if (p0.isNullOrBlank()){
-                                if (textInputLayout != null) {
-                                    textInputLayout.error = "List Name is required."
-                                }
-                                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
-                                        .isEnabled = false
-                            }else{
-                                if (textInputLayout != null) {
-                                    textInputLayout.error = ""
-                                }
-                                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
-                                        .isEnabled = true
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int,
+                                               p2: Int, p3: Int) {
+                        if (p0.isNullOrBlank()){
+                            if (textInputLayout != null) {
+                                textInputLayout.error = "List Name is required."
                             }
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                    .isEnabled = false
+                        }else{
+                            if (textInputLayout != null) {
+                                textInputLayout.error = ""
+                            }
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                    .isEnabled = true
                         }
-                    })
-                }
+                    }
+                })
             }
         }
 
         // get edit text layout
-        fun getEditTextLayout(context: Context): ConstraintLayout {
+        private fun getEditTextLayout(context: Context): ConstraintLayout {
             val constraintLayout = ConstraintLayout(context)
             val layoutParams = ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.MATCH_PARENT,

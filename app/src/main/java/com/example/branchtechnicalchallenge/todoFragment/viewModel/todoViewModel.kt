@@ -1,10 +1,9 @@
-package com.example.branchtechnicalchallenge.listFragment.viewModel
+package com.example.branchtechnicalchallenge.todoFragment.viewModel
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.db.tododb.TodoDatabase
@@ -37,7 +36,6 @@ class TodoViewModel(application: Application, var todoDatabase: TodoDatabase, va
         if (todo != null) {
             allToDoItems.value?.add(todo)
         }
-        Log.i("fuck", todo!!.title + todo.description + todo.completed + todo.uid)
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
 

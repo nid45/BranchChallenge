@@ -1,7 +1,9 @@
 <resources>
 
-<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-
+<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:fontFamily">@font/lato</item>
+    <item name="colorPrimaryDark">@color/light_green</item>
+    <item name="android:statusBarColor">@color/light_green</item>
 </style>
 
 <style name="fabStyle" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">

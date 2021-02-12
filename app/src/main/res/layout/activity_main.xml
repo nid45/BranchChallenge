@@ -7,6 +7,7 @@
         android:layout_height="match_parent"
         android:id="@+id/login_fragment"
         android:orientation="vertical"
+        app:statusBarBackground="@color/light_green"
         tools:context="com.example.branchtechnicalchallenge.MainActivity">
 
         <fragment

@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.db.tododb.TodoDatabase
-import com.example.branchtechnicalchallenge.listFragment.viewModel.ListsViewModel
-import com.example.branchtechnicalchallenge.listFragment.viewModel.TodoViewModel
+import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 
 class TodoViewModelFactory(
         private val application: Application, var todoDatabase: TodoDatabase, var binding: FragmentTodoBinding) : ViewModelProvider.Factory {

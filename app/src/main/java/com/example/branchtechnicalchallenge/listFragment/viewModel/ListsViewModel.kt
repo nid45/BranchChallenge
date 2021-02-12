@@ -38,7 +38,7 @@ class ListsViewModel(application: Application, var todoDatabase: ListsDatabase, 
     }
 
     fun createList(title: String) {
-        var list = Lists(title)
+        var list = Lists(title, System.currentTimeMillis())
         todoDatabase.listsDAO()?.addList(list)
         lists.value?.add(list)
         binding.listRecycler.adapter?.notifyDataSetChanged()

@@ -1,9 +1,11 @@
 package com.example.branchtechnicalchallenge.todoFragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.text.Editable
 import android.text.SpannableStringBuilder
-import android.util.Log
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
-import com.example.branchtechnicalchallenge.listFragment.viewModel.TodoViewModel
+import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 
 
 class TodoAdapter(var todos: MutableList<ToDo>,
@@ -39,6 +41,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
 
     class TodoViewHolder(var view: View): RecyclerView.ViewHolder(view.rootView) {
 
+        @SuppressLint("SetTextI18n")
         fun bind(todo: ToDo, context: Context, viewModel: TodoViewModel, position: Int, activity: Activity, binding: FragmentTodoBinding) {
             view.findViewById<TextView>(R.id.title).text = todo.title
             if(todo.completed){
@@ -74,13 +77,44 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                     binding.todoRecycler.adapter?.notifyDataSetChanged()
                     dialog.dismiss()
                 }
+
+                viewdialog.findViewById<TextView>(R.id.cancel).setOnClickListener {
+                    dialog.dismiss()
+                }
+
+
+                var titleEdit = viewdialog.findViewById<EditText>(R.id.edit_dialog_title)
+                titleEdit.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int,
+                                                   p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int,
+                                               p2: Int, p3: Int) {
+                        if (p0.isNullOrBlank()){
+                            if (titleEdit!= null) {
+                                titleEdit.error = "List Name is required."
+                            }
+                            viewdialog.findViewById<TextView>(R.id.save).isClickable = false
+                        }else{
+                            if (titleEdit != null) {
+                                titleEdit.error = ""
+                            }
+                            viewdialog.findViewById<TextView>(R.id.save).isClickable = true
+
+                        }
+                    }
+                })
             }
 
 
 
             itemView.setOnLongClickListener {
                 if (!todo.completed) {
-                    val alert = AlertDialog.Builder(context)
+                    AlertDialog.Builder(context)
                             .setTitle("Mark item as completed")
                             .setPositiveButton("Yes") { _, _ ->
                                 todo.completed = true
@@ -91,7 +125,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                             }
                             .create().show()
                 }else{
-                    val alert = AlertDialog.Builder(context)
+                    AlertDialog.Builder(context)
                             .setTitle("Mark item as incomplete")
                             .setPositiveButton("Yes") { _, _ ->
                                 todo.completed = false
@@ -102,7 +136,6 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                             .create().show()
                 }
                 return@setOnLongClickListener true
-
             }
         }
     }

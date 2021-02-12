@@ -2,7 +2,6 @@ package com.example.branchtechnicalchallenge.todoFragment
 
 import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,7 +20,7 @@ import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.db.tododb.TodoDatabase
-import com.example.branchtechnicalchallenge.listFragment.viewModel.TodoViewModel
+import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 import com.example.branchtechnicalchallenge.todoFragment.todoViewModelFactory.TodoViewModelFactory
 
 
@@ -59,7 +57,7 @@ class ToDoFragment : Fragment() {
 
         binding.todoTitle.text = list.title
 
-        viewModel.allToDoItems.value = (todoDatabase.ToDoDAO()?.getTodoForList(list.uid) as MutableList<ToDo>)
+        viewModel.allToDoItems.value = todoDatabase.ToDoDAO()?.getTodoForList(list.uid) as MutableList<ToDo>
 
         var adapter = context?.let { activity?.let { it1 -> TodoAdapter(viewModel.allToDoItems.value!!, it, viewModel, it1, binding) } }
 

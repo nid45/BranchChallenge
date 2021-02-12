@@ -7,13 +7,12 @@ import java.io.Serializable
 
 
 @Entity(tableName = "lists_table")
-class Lists : Serializable {
+class Lists(
+        @ColumnInfo(name = "title")
+        var title: String,
+        @ColumnInfo(name = "time_created")
+        var timecreated: Long
+    ) : Serializable {
     @PrimaryKey(autoGenerate = true) var uid = 0L
-    @ColumnInfo(name = "title")
-    var title: String
-
-    constructor(title: String) {
-        this.title = title
-    }
 
 }

@@ -19,17 +19,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.Lists
-import com.example.branchtechnicalchallenge.db.listsdb.ListsDatabase
 import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
-import com.example.branchtechnicalchallenge.listFragment.listsViewModelFactory.ListsViewModelFactory
+import com.example.branchtechnicalchallenge.db.listsdb.ListsDatabase
 import com.example.branchtechnicalchallenge.listFragment.adapter.ListsFragmentAdapter
+import com.example.branchtechnicalchallenge.listFragment.listsViewModelFactory.ListsViewModelFactory
 import com.example.branchtechnicalchallenge.listFragment.viewModel.ListsViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 
 /**
@@ -71,7 +68,7 @@ class ListsFragment : Fragment() {
 
         binding.listRecycler.layoutManager =
                 LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        val adapter = context?.let { ListsFragmentAdapter(viewModel.lists.value!!, it, viewModel) }
+        val adapter = context?.let { ListsFragmentAdapter(viewModel.lists.value!!, it, viewModel, binding) }
         binding.listRecycler.adapter = adapter
 
 
@@ -110,39 +107,37 @@ class ListsFragment : Fragment() {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
 
             // edit text text change listener
-            if (textInputEditText != null) {
-                textInputEditText.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {
-                    }
+            textInputEditText?.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                }
 
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int,
-                                                   p2: Int, p3: Int) {
-                    }
-
-                    override fun onTextChanged(p0: CharSequence?, p1: Int,
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int,
                                                p2: Int, p3: Int) {
-                        if (p0.isNullOrBlank()){
-                            if (textInputLayout != null) {
-                                textInputLayout.error = "List Name is required."
-                            }
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                    .isEnabled = false
-                        }else{
-                            if (textInputLayout != null) {
-                                textInputLayout.error = ""
-                            }
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                    .isEnabled = true
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int,
+                                           p2: Int, p3: Int) {
+                    if (p0.isNullOrBlank()){
+                        if (textInputLayout != null) {
+                            textInputLayout.error = "List Name is required."
                         }
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                                .isEnabled = false
+                    }else{
+                        if (textInputLayout != null) {
+                            textInputLayout.error = ""
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                                .isEnabled = true
                     }
-                })
-            }
+                }
+            })
         }
     }
 
 
 // get edit text layout
-fun getEditTextLayout(context: Context): ConstraintLayout {
+private fun getEditTextLayout(context: Context): ConstraintLayout {
     val constraintLayout = ConstraintLayout(context)
     val layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.MATCH_PARENT,
