@@ -27,6 +27,10 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                   var activity: Activity,
                   var binding: FragmentTodoBinding ): RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
+    companion object {
+        var selectedList: HashMap<ToDo, Int> = HashMap()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.todo_item_card, parent, false)
         return TodoViewHolder(view)
@@ -53,15 +57,11 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                 itemView.findViewById<TextView>(R.id.status).text = "Not Completed"
 
             }
-///TODO
-//            binding.delete.setOnClickListener {
-//                if(itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked){
-//                    viewModel.deleteTodo(todo, position)
-//                    binding.todoRecycler.adapter?.notifyDataSetChanged()
-//                }
-//            }
 
 
+           itemView.findViewById<CheckBox>(R.id.isCompleted).setOnCheckedChangeListener { buttonView, isChecked ->
+               selectedList.put(todo, position)
+           }
 
             itemView.setOnClickListener {
                 val builder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(context)
