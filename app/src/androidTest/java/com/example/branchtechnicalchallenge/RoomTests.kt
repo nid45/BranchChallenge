@@ -42,7 +42,7 @@ class SimpleEntityReadWriteTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeUserAndReadInList() {
+    fun writeListAndReadInList() {
         val list = Lists("test list", System.currentTimeMillis())
         list.uid = listDao.addList(list)
         val byUid = listDao.getList(list.uid)
@@ -85,7 +85,7 @@ class SimpleEntityReadWriteTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeUserAndToDo() {
+    fun writeListAndToDo() {
         val list = Lists("test list", System.currentTimeMillis())
         list.uid = listDao.addList(list)
         listDao.getList(list.uid)
@@ -102,10 +102,15 @@ class SimpleEntityReadWriteTest {
     fun testUpdateTodo() {
         val list = Lists("test list", System.currentTimeMillis())
         list.uid = listDao.addList(list)
-        list.title = "new title"
-        listDao.updateLists(list)
-        val byUid = listDao.getList(list.uid)
-        assertEquals("new title".trim(), byUid!!.title.trim())
+        listDao.getList(list.uid)
+        val todo = ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        todo.uid = todoDao.addTodo(todo)
+        todo.title = "new title"
+        todoDao.updateToDo(todo)
+        val byUid = todoDao.getTodo(todo.uid)
+        if (byUid != null) {
+            assertEquals("new title".trim(), byUid.title.trim())
+        }
     }
 
 
@@ -124,7 +129,7 @@ class SimpleEntityReadWriteTest {
         }
         if (listOfLists != null) {
             for(l in listOfLists){
-                assertEquals("test list2", l.title)
+                assertEquals("test list2".trim(), l.title.trim())
             }
         }
     }
