@@ -56,6 +56,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                         .setTitle("Are you sure you want to delete this list?")
                         .setPositiveButton("Yes"){ _, _ ->
                             viewModel.deleteLists(list, position)
+                            binding.listRecycler.adapter?.notifyDataSetChanged()
                         }
                         .create().show()
                 return@setOnLongClickListener true

@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.TextView
@@ -39,17 +40,27 @@ class TodoAdapter(var todos: MutableList<ToDo>,
         return todos.size
     }
 
+
     class TodoViewHolder(var view: View): RecyclerView.ViewHolder(view.rootView) {
 
         @SuppressLint("SetTextI18n")
         fun bind(todo: ToDo, context: Context, viewModel: TodoViewModel, position: Int, activity: Activity, binding: FragmentTodoBinding) {
             view.findViewById<TextView>(R.id.title).text = todo.title
+            itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked = false
             if(todo.completed){
                 itemView.findViewById<TextView>(R.id.status).text = "Completed"
             } else{
                 itemView.findViewById<TextView>(R.id.status).text = "Not Completed"
 
             }
+///TODO
+//            binding.delete.setOnClickListener {
+//                if(itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked){
+//                    viewModel.deleteTodo(todo, position)
+//                    binding.todoRecycler.adapter?.notifyDataSetChanged()
+//                }
+//            }
+
 
 
             itemView.setOnClickListener {
@@ -119,7 +130,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                             .setPositiveButton("Yes") { _, _ ->
                                 todo.completed = true
                                 viewModel.updateTodo(todo, position)
-                                view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
+                                binding.todoRecycler.adapter?.notifyDataSetChanged()
 
                             }.setNegativeButton("No") { _, _ ->
                             }
@@ -130,7 +141,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                             .setPositiveButton("Yes") { _, _ ->
                                 todo.completed = false
                                 viewModel.updateTodo(todo, position)
-                                view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
+                                binding.todoRecycler.adapter?.notifyDataSetChanged()
                             }.setNegativeButton("No") { _, _ ->
                             }
                             .create().show()
