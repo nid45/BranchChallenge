@@ -19,7 +19,6 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
 
 
     fun deleteLists(list: Lists, position: Int) {
-        Log.i("here", position.toString())
         lists.value?.removeAt(position)
         todoDatabase.listsDAO()?.deleteLists(list)
         binding.listRecycler.adapter?.notifyDataSetChanged()
