@@ -8,7 +8,7 @@ import com.example.branchtechnicalchallenge.data.ToDo
 interface ToDoDAO {
     
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addTodo(todo: ToDo?)
+    fun addTodo(todo: ToDo?): Long
     
     @Update
     fun updateToDo(todo: ToDo?)

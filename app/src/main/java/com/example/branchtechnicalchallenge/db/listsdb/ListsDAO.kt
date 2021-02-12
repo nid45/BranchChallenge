@@ -7,7 +7,7 @@ import com.example.branchtechnicalchallenge.data.Lists
 interface ListsDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addList(list: Lists?)
+    fun addList(list: Lists?): Long
 
     @Update
     fun updateLists(list: Lists?)

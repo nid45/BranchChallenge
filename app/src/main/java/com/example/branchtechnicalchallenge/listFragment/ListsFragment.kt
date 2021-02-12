@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
@@ -16,11 +17,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
+import com.example.branchtechnicalchallenge.MainActivity.Companion.db
 import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
-import com.example.branchtechnicalchallenge.db.listsdb.ListsDatabase
+import com.example.branchtechnicalchallenge.db.Database
 import com.example.branchtechnicalchallenge.listFragment.adapter.ListsFragmentAdapter
 import com.example.branchtechnicalchallenge.listFragment.listsViewModelFactory.ListsViewModelFactory
 import com.example.branchtechnicalchallenge.listFragment.viewModel.ListsViewModel
@@ -38,7 +39,7 @@ class ListsFragment : Fragment() {
     lateinit var ListsViewModelFactory: ListsViewModelFactory
     lateinit var viewModel: ListsViewModel
     private lateinit var binding: FragmentListsBinding
-    lateinit var todoDatabase: ListsDatabase
+    lateinit var database: Database
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -51,19 +52,25 @@ class ListsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.onBackPressedDispatcher?.addCallback(
+                viewLifecycleOwner,
+                object : OnBackPressedCallback(
+                        true
+                ) {
+                    override fun handleOnBackPressed() {}
+                })
 
         //create the viewmodel that will hold the data
 
-        todoDatabase = Room.databaseBuilder(requireActivity().applicationContext , ListsDatabase::
-        class.java, "DB").allowMainThreadQueries().build()
-        ListsViewModelFactory = ListsViewModelFactory(Application(), todoDatabase, binding)
+        this.database = db
+        ListsViewModelFactory = ListsViewModelFactory(Application(), database, binding)
         viewModel = ViewModelProvider(
                 this,
                 ListsViewModelFactory
         ).get(ListsViewModel::class.java)
 
 
-        viewModel.lists.value = (todoDatabase.listsDAO()?.lists as MutableList<Lists>)
+        viewModel.lists.value = (database.listsDAO()?.lists as MutableList<Lists>)
 
 
         binding.listRecycler.layoutManager =

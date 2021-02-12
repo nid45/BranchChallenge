@@ -2,24 +2,24 @@ package com.example.branchtechnicalchallenge.todoFragment
 
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
+import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
+import com.example.branchtechnicalchallenge.MainActivity.Companion.db
 import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
-import com.example.branchtechnicalchallenge.db.tododb.TodoDatabase
+import com.example.branchtechnicalchallenge.db.Database
+import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter
+import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter.Companion.selectedList
 import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 import com.example.branchtechnicalchallenge.todoFragment.todoViewModelFactory.TodoViewModelFactory
 
@@ -31,7 +31,7 @@ class ToDoFragment : Fragment() {
     lateinit var todoViewModelFactory: TodoViewModelFactory
     lateinit var viewModel: TodoViewModel
     private lateinit var binding: FragmentTodoBinding
-    lateinit var todoDatabase: TodoDatabase
+    lateinit var database: Database
     lateinit var list: Lists
 
     override fun onCreateView(
@@ -47,9 +47,8 @@ class ToDoFragment : Fragment() {
         )
         val bundle = arguments
         list = (bundle!!.getSerializable("list") as Lists?)!!
-        todoDatabase = Room.databaseBuilder(requireActivity().applicationContext , TodoDatabase::
-        class.java, "todoDB").allowMainThreadQueries().build()
-        todoViewModelFactory = TodoViewModelFactory(Application(), todoDatabase, binding)
+        this.database = db
+        todoViewModelFactory = TodoViewModelFactory(Application(), database, binding)
         viewModel = ViewModelProvider(
                 this,
                 todoViewModelFactory
@@ -57,7 +56,7 @@ class ToDoFragment : Fragment() {
 
         binding.todoTitle.text = list.title
 
-        viewModel.allToDoItems.value = todoDatabase.ToDoDAO()?.getTodoForList(list.uid) as MutableList<ToDo>
+        viewModel.allToDoItems.value = database.todoDAO()?.getTodoForList(list.uid) as MutableList<ToDo>
 
         var adapter = context?.let { activity?.let { it1 -> TodoAdapter(viewModel.allToDoItems.value!!, it, viewModel, it1, binding) } }
 
@@ -67,6 +66,11 @@ class ToDoFragment : Fragment() {
         binding.todoRecycler.adapter = adapter
 
 
+        binding.delete.setOnClickListener {
+            for(todo in selectedList ){
+                viewModel.deleteTodo(todo.key)
+            }
+        }
 
 
         binding.todoFab.setOnClickListener {
@@ -80,8 +84,8 @@ class ToDoFragment : Fragment() {
             var dialog = builder.create()
             dialog.show()
             viewdialog.findViewById<RadioButton>(R.id.incomplete).isChecked = true
-            val alert = context?.let { it1 ->
-                var save = viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
+            context?.let { it1 ->
+                viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
                     viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId -> // checkedId is the RadioButton selected
                         when (checkedId) {
                             R.id.completed -> {

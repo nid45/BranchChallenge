@@ -6,10 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
-import com.example.branchtechnicalchallenge.db.listsdb.ListsDatabase
+import com.example.branchtechnicalchallenge.db.Database
 
 
-class ListsViewModel(application: Application, var todoDatabase: ListsDatabase, var binding: FragmentListsBinding) :
+class ListsViewModel(application: Application, var todoDatabase: Database, var binding: FragmentListsBinding) :
     AndroidViewModel(application) {
     var lists = MutableLiveData<MutableList<Lists>>()
 
@@ -38,8 +38,9 @@ class ListsViewModel(application: Application, var todoDatabase: ListsDatabase, 
     }
 
     fun createList(title: String) {
-        var list = Lists(title, System.currentTimeMillis())
-        todoDatabase.listsDAO()?.addList(list)
+        val list = Lists(title, System.currentTimeMillis())
+        val uid = todoDatabase.listsDAO()?.addList(list)
+        list.uid = uid!!
         lists.value?.add(list)
         binding.listRecycler.adapter?.notifyDataSetChanged()
     }

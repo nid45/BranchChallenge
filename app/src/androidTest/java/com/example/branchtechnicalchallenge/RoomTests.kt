@@ -1,2 +1,88 @@
 package com.example.branchtechnicalchallenge
 
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.branchtechnicalchallenge.data.Lists
+import com.example.branchtechnicalchallenge.db.listsdb.ListsDAO
+import com.example.branchtechnicalchallenge.db.Database
+import com.example.branchtechnicalchallenge.db.tododb.ToDoDAO
+import org.hamcrest.CoreMatchers.equalTo
+import org.junit.After
+import org.junit.Assert
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.IOException
+
+@RunWith(AndroidJUnit4::class)
+class SimpleEntityReadWriteTest {
+    private lateinit var listDao: ListsDAO
+    private lateinit var todoDao: ToDoDAO
+    private lateinit var db: Database
+
+    @Before
+    fun createDb() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(
+                context, Database::class.java).build()
+        listDao = db.listsDAO()!!
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        db.close()
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun writeUserAndReadInList() {
+        val list = Lists("test list", System.currentTimeMillis())
+        list.uid = listDao.addList(list)
+        val byUid = listDao.getList(list.uid)
+        if (byUid != null) {
+            assertThat(list.uid, equalTo(byUid.uid))
+        }
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testUpdate() {
+        val list = Lists("test list", System.currentTimeMillis())
+        list.uid = listDao.addList(list)
+        list.title = "new title"
+        listDao.updateLists(list)
+        val byUid = listDao.getList(list.uid)
+        if (byUid != null) {
+            System.out.println("testing stuff " + byUid.title.trim().equals("new title".trim()))
+        }
+        if (byUid != null) {
+            assertTrue(byUid.title.trim().equals("new title".trim()))
+        }
+    }
+
+
+    @Test
+    @Throws(Exception::class)
+    fun testDelete() {
+        val list = Lists("test list", System.currentTimeMillis())
+        val list2 = Lists("test list2", System.currentTimeMillis())
+        var uid1 = listDao.addList(list)
+        var uid2= listDao.addList(list2)
+        list.uid = uid1
+        listDao.deleteLists(list)
+        val listOfLists = listDao.lists
+        if (listOfLists != null) {
+            assertEquals(1, listOfLists.size)
+        }
+        if (listOfLists != null) {
+            for(l in listOfLists){
+                assertEquals("test list2", l.title)
+            }
+        }
+
+    }
+}

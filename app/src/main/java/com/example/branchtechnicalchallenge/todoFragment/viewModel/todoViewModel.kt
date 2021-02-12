@@ -1,15 +1,14 @@
 package com.example.branchtechnicalchallenge.todoFragment.viewModel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
-import com.example.branchtechnicalchallenge.db.tododb.TodoDatabase
+import com.example.branchtechnicalchallenge.db.Database
 
 
-class TodoViewModel(application: Application, var todoDatabase: TodoDatabase, var binding: FragmentTodoBinding) : AndroidViewModel(application) {
+class TodoViewModel(application: Application, var todoDatabase: Database, var binding: FragmentTodoBinding) : AndroidViewModel(application) {
 
     val allToDoItems = MutableLiveData<MutableList<ToDo>>()
 
@@ -18,22 +17,22 @@ class TodoViewModel(application: Application, var todoDatabase: TodoDatabase, va
     }
 
 
-    fun deleteTodo(todo: ToDo, position: Int) {
-        Log.i("here", position.toString())
-        allToDoItems.value?.removeAt(position)
-        todoDatabase.ToDoDAO()?.deleteToDo(todo)
+    fun deleteTodo(todo: ToDo) {
+        allToDoItems.value?.remove(todo)
+        todoDatabase.todoDAO()?.deleteToDo(todo)
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
 
     fun updateTodo(todo: ToDo, position:Int) {
-        todoDatabase.ToDoDAO()?.updateToDo(todo)
+        todoDatabase.todoDAO()?.updateToDo(todo)
         allToDoItems.value?.set(position, todo)
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
 
     fun createTodo(todo: ToDo?) {
-        todoDatabase.ToDoDAO()?.addTodo(todo)
+        var uid = todoDatabase.todoDAO()?.addTodo(todo)
         if (todo != null) {
+            todo.uid = uid!!
             allToDoItems.value?.add(todo)
         }
         binding.todoRecycler.adapter?.notifyDataSetChanged()
