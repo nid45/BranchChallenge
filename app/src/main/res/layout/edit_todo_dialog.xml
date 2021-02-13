@@ -26,8 +26,8 @@
         android:fontFamily="@font/lato"
         android:text=""
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@id/save"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -58,68 +58,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/desc_title" />
-
-    <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginLeft="20dp"
-        android:fontFamily="@font/lato"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/description">
-
-        <RadioButton
-            android:id="@+id/completed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/white"
-            android:fontFamily="@font/lato"
-            android:text="Completed" />
-
-        <RadioButton
-            android:id="@+id/incomplete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/white"
-            android:fontFamily="@font/lato"
-            android:text="Incomplete" />
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/lato"
-        android:text="Cancel"
-        android:clickable="true"
-        android:textSize="20sp"
-        android:paddingBottom="20dp"
-        app:layout_constraintEnd_toStartOf="@id/save"
-        app:layout_constraintTop_toBottomOf="@+id/radio_group"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <TextView
-        android:id="@+id/save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/lato"
-        android:text="Save"
-        android:clickable="true"
-        android:textSize="20sp"
-        android:paddingBottom="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radio_group"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

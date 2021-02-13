@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
@@ -22,12 +21,15 @@ import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
+
+//adapter fr recyclerview that displays to do items
 class TodoAdapter(var todos: MutableList<ToDo>,
                   var contextin: Context,
                   var viewModel: TodoViewModel,
                   var activity: Activity,
                   var binding: FragmentTodoBinding ): RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
+    //remove item at specific position for swipe delete
     fun removeAt(position: Int) {
         this.viewModel.deleteTodo(todos.get(position))
         notifyItemRemoved(position)
@@ -46,10 +48,8 @@ class TodoAdapter(var todos: MutableList<ToDo>,
         return todos.size
     }
 
-
+//to do viewholder class
     class TodoViewHolder(var view: View): RecyclerView.ViewHolder(view.rootView) {
-
-
 
         @SuppressLint("SetTextI18n")
         fun bind(todo: ToDo, context: Context, viewModel: TodoViewModel, position: Int, activity: Activity, binding: FragmentTodoBinding) {
@@ -57,6 +57,8 @@ class TodoAdapter(var todos: MutableList<ToDo>,
             if(todo.completed) {
                 itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked = true
             }
+
+            //completed text based on whether to do object is labelled complete
             if(todo.completed){
                 itemView.findViewById<TextView>(R.id.status).text = "Completed"
             } else{
@@ -65,50 +67,42 @@ class TodoAdapter(var todos: MutableList<ToDo>,
             }
 
 
+            //change in checkbox denotes whether the to do has been labelled complete
             itemView.findViewById<CheckBox>(R.id.isCompleted).setOnCheckedChangeListener { _, _ ->
                 todo.completed = itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked
                 binding.todoRecycler.adapter?.notifyDataSetChanged()
             }
 
 
-
+            //allow user to edit a to do item when they click on the card
             itemView.setOnClickListener {
                 val builder = MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)
                 val inflater: LayoutInflater =  activity.layoutInflater
 
                 val viewdialog: View = inflater.inflate(R.layout.edit_todo_dialog, null)
                 builder.setView(viewdialog)
-                var dialog = builder.create()
-                dialog.show()
-// TODO: 2/12/21 edittext turns blue when selected
-                viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text = todo.title
-                viewdialog.findViewById<EditText>(R.id.description).text = SpannableStringBuilder(todo.description)
-                if (todo.completed) {
-                    viewdialog.findViewById<RadioButton>(R.id.completed).isChecked = true
-                } else {
-                    viewdialog.findViewById<RadioButton>(R.id.incomplete).isChecked = true
-                }
 
-                viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
+                builder.setPositiveButton("Save") { _, _ ->
                     if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == "") {
                         viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
                     } else {
-                        todo.completed = viewdialog.findViewById<RadioButton>(R.id.completed).isChecked == true
                         todo.title = viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text.toString()
                         todo.description = viewdialog.findViewById<EditText>(R.id.description).text.toString()
                         viewModel.updateTodo(todo, position)
                         binding.todoRecycler.adapter?.notifyDataSetChanged()
-                        dialog.dismiss()
                     }
                 }
 
-                viewdialog.findViewById<TextView>(R.id.cancel).setOnClickListener {
-                    dialog.dismiss()
-                }
+                builder.setNeutralButton("Cancel") { _, _ -> }
+
+                val dialog = builder.create()
+                dialog.show()
+                viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text = todo.title
+                viewdialog.findViewById<EditText>(R.id.description).text = SpannableStringBuilder(todo.description)
 
 
-                var titleEdit = viewdialog.findViewById<EditText>(R.id.edit_dialog_title)
-                titleEdit.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
+                //show error message saying that a title is required and make the submit unclickable until there is text
+                viewdialog.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
                     }
 
@@ -119,15 +113,14 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                     override fun onTextChanged(p0: CharSequence?, p1: Int,
                                                p2: Int, p3: Int) {
                         if (p0.isNullOrBlank()){
-                            if (titleEdit!= null) {
-                                titleEdit.error = "List Name is required."
+                            if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.equals("")) {
+                                viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
                             }
-                            viewdialog.findViewById<TextView>(R.id.save).isClickable = false
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
                         }else{
-                            if (titleEdit != null) {
-                                titleEdit.error = ""
-                            }
-                            viewdialog.findViewById<TextView>(R.id.save).isClickable = true
+                            viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = null
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
 
                         }
                     }

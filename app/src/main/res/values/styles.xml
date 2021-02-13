@@ -1,21 +1,5 @@
 <resources>
 
-<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:fontFamily">@font/lato</item>
-    <item name="colorPrimaryDark">@color/light_green</item>
-    <item name="android:statusBarColor">@color/light_green</item>
-
-</style>
-
-<style name="fabStyle" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
-    <item name="android:background">@drawable/fab_style</item>
-    <item name="backgroundTint">#1F1F1F</item>
-</style>
-
-    <style name="CustomTextInputEditText" parent="Widget.AppCompat.EditText">
-        <item name="backgroundTint">@color/white</item>
-    </style>
-
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>

@@ -124,7 +124,7 @@ class SimpleEntityReadWriteTest {
         todoDao.updateToDo(todo)
         val byUid = todoDao.getTodo(todo.uid)
         if (byUid != null) {
-            assertEquals("new title".trim(), byUid.title.trim())
+            assertEquals("new title", byUid.title.trim())
         }
     }
 
@@ -165,4 +165,28 @@ class SimpleEntityReadWriteTest {
             }
         }
     }
+
+    @Test(timeout = 100)
+    @Throws(Exception::class)
+    fun testCascadeDelete() {
+        val list = Lists("test list", System.currentTimeMillis())
+        var uid1 = listDao.addList(list)
+        list.uid = uid1
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        listDao.deleteLists(list)
+        val listOfLists = listDao.lists
+        val listOfToDos = todoDao.getTodoForList(list.uid)
+        if (listOfLists != null) {
+            assertEquals(0, listOfLists.size)
+        }
+        if (listOfLists != null) {
+            for(l in listOfLists){
+                assertEquals("test list2".trim(), l.title.trim())
+            }
+        }
+    }
+
+
 }

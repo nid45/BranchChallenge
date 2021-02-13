@@ -21,6 +21,12 @@ class TodoViewModel(application: Application, var todoDatabase: Database, var bi
         allToDoItems.value = mutableListOf()
     }
 
+    /**
+     * Initialize data into to do items from the room database
+     *
+     * @param  database  room database where we need to pull data from
+     * @return  none
+     */
     fun initData(database: Database, list: Lists){
         lateinit var temp: MutableList<ToDo>
         runBlocking {
@@ -31,6 +37,12 @@ class TodoViewModel(application: Application, var todoDatabase: Database, var bi
         allToDoItems.value = temp
     }
 
+    /**
+     * delete a to do item from database and viewmodel
+     *
+     * @param  to do which item must be deleted from viemodel and database
+     * @return  none
+     */
     fun deleteTodo(todo: ToDo) {
         allToDoItems.value?.remove(todo)
         runBlocking {
@@ -41,6 +53,13 @@ class TodoViewModel(application: Application, var todoDatabase: Database, var bi
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
 
+    /**
+     * update a to do object in viewmodel and database
+     *
+     * @param  to do  update a to do object in viewmodel and database
+     * @param  position  position in list that must be updated
+     * @return  none
+     */
     fun updateTodo(todo: ToDo, position:Int) {
         runBlocking {
             withContext(Dispatchers.IO) {
@@ -52,6 +71,12 @@ class TodoViewModel(application: Application, var todoDatabase: Database, var bi
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
 
+    /**
+     * create a to do object in viewmodel and database
+     *
+     * @param  to do  create a to do object in viewmodel and database
+     * @return  none
+     */
     fun createTodo(todo: ToDo?) {
         var uid: Long
         runBlocking {
@@ -65,6 +90,5 @@ class TodoViewModel(application: Application, var todoDatabase: Database, var bi
         }
         binding.todoRecycler.adapter?.notifyDataSetChanged()
     }
-
 
 }

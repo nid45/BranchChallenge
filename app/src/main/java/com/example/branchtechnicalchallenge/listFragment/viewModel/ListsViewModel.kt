@@ -21,6 +21,12 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         lists.value = mutableListOf()
     }
 
+    /**
+     * Initialize data into lists from the room database
+     *
+     * @param  database  room database where we need to pull data from
+     * @return  none
+     */
     fun initData(database: Database){
         lateinit var temp: MutableList<Lists>
         runBlocking {
@@ -31,6 +37,13 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         lists.value = temp
     }
 
+    /**
+     * delete a list from database and viewmodel
+     *
+     * @param  list which list must be deleted from viemodel and database
+     * @param  position  position in list that must be deleted
+     * @return  none
+     */
     fun deleteLists(list: Lists, position: Int) {
         lists.value?.removeAt(position)
         runBlocking {
@@ -41,6 +54,13 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         binding.listRecycler.adapter?.notifyDataSetChanged()
     }
 
+    /**
+     * edit a list object in viewmodel and database
+     *
+     * @param  title  the new title of a list
+     * @param position position of the element that needs to be updated
+     * @return  none
+     */
     fun updateList(title: String, position:Int) {
         val list: Lists? = lists.value?.get(position)
         if (list != null) {
@@ -57,6 +77,12 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         binding.listRecycler.adapter?.notifyDataSetChanged()
     }
 
+    /**
+     * Creates a new list in viewmodel and database
+     *
+     * @param  title title of new list
+     * @return  none
+     */
     fun createList(title: String) {
         var uid: Long
         val list = Lists(title, System.currentTimeMillis())

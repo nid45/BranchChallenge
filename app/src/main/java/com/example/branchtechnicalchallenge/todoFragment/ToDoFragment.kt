@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -88,77 +89,69 @@ class ToDoFragment : Fragment() {
 
 
         binding.todoFab.setOnClickListener {
-          //  var viewdialog = layoutInflater.inflate(R.layout.edit_todo_dialog, null);
-            var complete = false
-            val builder = context?.let { it1 -> MaterialAlertDialogBuilder(it1, R.style.ThemeOverlay_App_MaterialAlertDialog) }
-            val inflater: LayoutInflater =  requireActivity().layoutInflater
+            createNewToDo()
+        }
 
-            val viewdialog: View = inflater.inflate(R.layout.edit_todo_dialog, null)
-            viewdialog.findViewById<TextView>(R.id.edit_dialog_title).hint = "Title"
+        binding.emptyState.setOnClickListener {
+            createNewToDo()
+        }
+    }
+    private fun createNewToDo(){
+        //  var viewdialog = layoutInflater.inflate(R.layout.edit_todo_dialog, null);
+        var complete = false
+        val builder = context?.let { it1 -> MaterialAlertDialogBuilder(it1, R.style.ThemeOverlay_App_MaterialAlertDialog) }
+        val inflater: LayoutInflater =  requireActivity().layoutInflater
 
-            builder!!.setView(viewdialog)
+        val viewdialog: View = inflater.inflate(R.layout.edit_todo_dialog, null)
+        viewdialog.findViewById<TextView>(R.id.edit_dialog_title).hint = "Title"
 
+        builder!!.setView(viewdialog)
 
-            var dialog = builder.create()
-            dialog.show()
+        builder.setNeutralButton("Cancel") { _, _ -> }
 
-            viewdialog.findViewById<TextView>(R.id.cancel).setOnClickListener {
-                dialog.dismiss()
-            }
-            viewdialog.findViewById<RadioButton>(R.id.incomplete).isChecked = true
-            context?.let {
-                viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
-                    if(viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == ""){
-                        viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
-                    }else {
-                        viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { _, checkedId -> // checkedId is the RadioButton selected
-                            when (checkedId) {
-                                R.id.completed -> {
-                                    complete = true
-                                }
-                                R.id.incomplete -> {
-                                    complete = false
-                                }
-                            }
-                        }
-                        val desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
-                        val title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
-                        val todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
-                        viewModel.createTodo(todo)
-                        if(viewModel.allToDoItems.value?.size != 0){
-                            binding.emptyState.visibility = View.INVISIBLE
-                        }
-                        view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
-                        dialog.dismiss()
+        context?.let {
+            builder.setPositiveButton("Save") { _, _ ->
+                if(viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == ""){
+                    viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
+                }else {
+                    val desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
+                    val title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
+                    val todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
+                    viewModel.createTodo(todo)
+                    if(viewModel.allToDoItems.value?.size != 0){
+                        binding.emptyState.visibility = View.INVISIBLE
                     }
+                    view?.findViewById<RecyclerView>(R.id.todo_recycler)?.adapter?.notifyDataSetChanged()
                 }
-
             }
-            viewdialog.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int,
-                                               p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int,
-                                           p2: Int, p3: Int) {
-                    if (p0.isNullOrBlank()){
-                        if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.equals("")) {
-                            viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
-                        }
-                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
-                                .isEnabled = false
-                    }else{
-                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
-                                .isEnabled = true
-                    }
-                }
-            })
 
         }
 
+        val dialog = builder.create()
+        dialog.show()
 
+        viewdialog.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int,
+                                           p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int,
+                                       p2: Int, p3: Int) {
+                if (p0.isNullOrBlank()){
+                    if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.equals("")) {
+                        viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
+                    }
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+                }else{
+                    viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = null
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+
+                }
+            }
+        })
     }
 }

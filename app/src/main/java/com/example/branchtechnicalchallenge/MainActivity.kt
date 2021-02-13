@@ -23,14 +23,14 @@ class MainActivity : AppCompatActivity() {
         class.java, "DB").allowMainThreadQueries().build()
     }
 
+    //close database when app is closed
     override fun onDestroy() {
         super.onDestroy()
         if (db.isOpen) {
             db.close()
         }
     }
-    
-    
+
     companion object{
         lateinit var db: Database
     }
