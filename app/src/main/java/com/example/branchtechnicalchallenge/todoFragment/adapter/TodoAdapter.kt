@@ -67,6 +67,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
 
             itemView.findViewById<CheckBox>(R.id.isCompleted).setOnCheckedChangeListener { _, _ ->
                 todo.completed = itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked
+                binding.todoRecycler.adapter?.notifyDataSetChanged()
             }
 
 

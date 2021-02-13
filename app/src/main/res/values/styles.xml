@@ -12,6 +12,10 @@
     <item name="backgroundTint">#1F1F1F</item>
 </style>
 
+    <style name="CustomTextInputEditText" parent="Widget.AppCompat.EditText">
+        <item name="backgroundTint">@color/white</item>
+    </style>
+
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>

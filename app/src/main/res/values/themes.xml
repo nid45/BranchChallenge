@@ -23,6 +23,9 @@
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
     </style>
+    <style name="CustomTextInputEdit" parent="Widget.AppCompat.EditText">
+        <item name="backgroundTint">@color/white</item>
+    </style>
     <style name="Theme.BranchTechnicalChallenge.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

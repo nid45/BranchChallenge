@@ -4,12 +4,14 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -108,8 +110,7 @@ class ListsFragment : Fragment() {
             builder.setView(constraintLayout)
 
             val textInputLayout = constraintLayout?.findViewWithTag<TextInputLayout>("textInputLayoutTag")
-            val textInputEditText = constraintLayout?.findViewWithTag<TextInputEditText>("textInputEditTextTag")
-
+            val textInputEditText = constraintLayout?.findViewWithTag<EditText>("textInputEditTextTag")
 
             // alert dialog positive button
             builder.setPositiveButton("Submit"){ _, _ -> //set what should happen when negative button is clicked
@@ -184,7 +185,7 @@ private fun getEditTextLayout(context: Context): ConstraintLayout {
     textInputLayout.tag = "textInputLayoutTag"
 
 
-    val textInputEditText = TextInputEditText(context)
+    val textInputEditText = EditText(context)
     textInputEditText.id = View.generateViewId()
     textInputEditText.tag = "textInputEditTextTag"
 
