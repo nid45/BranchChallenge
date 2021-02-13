@@ -1,12 +1,16 @@
 package com.example.branchtechnicalchallenge.listFragment.viewModel
 
 import android.app.Application
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
 import com.example.branchtechnicalchallenge.db.Database
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 
 class ListsViewModel(application: Application, var todoDatabase: Database, var binding: FragmentListsBinding) :
@@ -17,10 +21,23 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         lists.value = mutableListOf()
     }
 
+    fun initData(database: Database){
+        lateinit var temp: MutableList<Lists>
+        runBlocking {
+             withContext(Dispatchers.IO) {
+                 temp = database.listsDAO()?.lists as MutableList<Lists>
+             }
+        }
+        lists.value = temp
+    }
 
     fun deleteLists(list: Lists, position: Int) {
         lists.value?.removeAt(position)
-        todoDatabase.listsDAO()?.deleteLists(list)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                todoDatabase.listsDAO()?.deleteLists(list)
+            }
+        }
         binding.listRecycler.adapter?.notifyDataSetChanged()
     }
 
@@ -29,7 +46,11 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
         if (list != null) {
             list.title = title
         }
-        todoDatabase.listsDAO()?.updateLists(list)
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                todoDatabase.listsDAO()?.updateLists(list)
+            }
+        }
         if (list != null) {
             lists.value?.set(position, list)
         }
@@ -37,9 +58,14 @@ class ListsViewModel(application: Application, var todoDatabase: Database, var b
     }
 
     fun createList(title: String) {
+        var uid: Long
         val list = Lists(title, System.currentTimeMillis())
-        val uid = todoDatabase.listsDAO()?.addList(list)
-        list.uid = uid!!
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                uid = todoDatabase.listsDAO()?.addList(list)!!
+            }
+        }
+        list.uid = uid
         lists.value?.add(list)
         binding.listRecycler.adapter?.notifyDataSetChanged()
     }

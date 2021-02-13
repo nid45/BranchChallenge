@@ -19,6 +19,7 @@ import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 class TodoAdapter(var todos: MutableList<ToDo>,
@@ -64,14 +65,14 @@ class TodoAdapter(var todos: MutableList<ToDo>,
            }
 
             itemView.setOnClickListener {
-                val builder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(context)
+                val builder = MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)
                 val inflater: LayoutInflater =  activity.layoutInflater
 
                 val viewdialog: View = inflater.inflate(R.layout.edit_todo_dialog, null)
                 builder.setView(viewdialog)
                 var dialog = builder.create()
                 dialog.show()
-
+// TODO: 2/12/21 edittext turns blue when selected 
                 viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text = todo.title
                 viewdialog.findViewById<EditText>(R.id.description).text = SpannableStringBuilder(todo.description)
                 if (todo.completed) {
@@ -81,12 +82,16 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                 }
 
                 viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
-                    todo.completed = viewdialog.findViewById<RadioButton>(R.id.completed).isChecked == true
-                    todo.title = viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text.toString()
-                    todo.description = viewdialog.findViewById<EditText>(R.id.description).text.toString()
-                    viewModel.updateTodo(todo, position)
-                    binding.todoRecycler.adapter?.notifyDataSetChanged()
-                    dialog.dismiss()
+                    if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == "") {
+                        viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
+                    } else {
+                        todo.completed = viewdialog.findViewById<RadioButton>(R.id.completed).isChecked == true
+                        todo.title = viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text.toString()
+                        todo.description = viewdialog.findViewById<EditText>(R.id.description).text.toString()
+                        viewModel.updateTodo(todo, position)
+                        binding.todoRecycler.adapter?.notifyDataSetChanged()
+                        dialog.dismiss()
+                    }
                 }
 
                 viewdialog.findViewById<TextView>(R.id.cancel).setOnClickListener {

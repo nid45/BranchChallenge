@@ -2,6 +2,8 @@ package com.example.branchtechnicalchallenge.todoFragment
 
 import android.app.Application
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter
 import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter.Companion.selectedList
 import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 import com.example.branchtechnicalchallenge.todoFragment.todoViewModelFactory.TodoViewModelFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 /**
@@ -56,7 +59,7 @@ class ToDoFragment : Fragment() {
 
         binding.todoTitle.text = list.title
 
-        viewModel.allToDoItems.value = database.todoDAO()?.getTodoForList(list.uid) as MutableList<ToDo>
+        viewModel.initData(database, list)
 
         var adapter = context?.let { activity?.let { it1 -> TodoAdapter(viewModel.allToDoItems.value!!, it, viewModel, it1, binding) } }
 
@@ -76,35 +79,72 @@ class ToDoFragment : Fragment() {
         binding.todoFab.setOnClickListener {
           //  var viewdialog = layoutInflater.inflate(R.layout.edit_todo_dialog, null);
             var complete = false
-            val builder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(context)
+            val builder = context?.let { it1 -> MaterialAlertDialogBuilder(it1, R.style.ThemeOverlay_App_MaterialAlertDialog) }
             val inflater: LayoutInflater =  requireActivity().layoutInflater
 
             val viewdialog: View = inflater.inflate(R.layout.edit_todo_dialog, null)
-            builder.setView(viewdialog)
+            viewdialog.findViewById<TextView>(R.id.edit_dialog_title).hint = "Title"
+
+            builder!!.setView(viewdialog)
+
+
             var dialog = builder.create()
             dialog.show()
+
+            viewdialog.findViewById<TextView>(R.id.cancel).setOnClickListener {
+                dialog.dismiss()
+            }
             viewdialog.findViewById<RadioButton>(R.id.incomplete).isChecked = true
             context?.let { it1 ->
                 viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
-                    viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId -> // checkedId is the RadioButton selected
-                        when (checkedId) {
-                            R.id.completed -> {
-                                complete = true
-                            }
-                            R.id.incomplete -> {
-                                complete = false
+                    if(viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == ""){
+                        viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
+                    }else {
+                        viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId -> // checkedId is the RadioButton selected
+                            when (checkedId) {
+                                R.id.completed -> {
+                                    complete = true
+                                }
+                                R.id.incomplete -> {
+                                    complete = false
+                                }
                             }
                         }
+                        var desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
+                        var title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
+                        var todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
+                        viewModel.createTodo(todo)
+                        view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
+                        dialog.dismiss()
                     }
-                    var desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
-                    var title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
-                    var todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
-                    viewModel.createTodo(todo)
-                    view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
-                    dialog.dismiss()
                 }
 
             }
+            viewdialog.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                }
+
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int,
+                                               p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int,
+                                           p2: Int, p3: Int) {
+                    if (p0.isNullOrBlank()){
+                        if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.equals("")) {
+                            viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
+                        }
+                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                .isEnabled = false
+                    }else{
+                        if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title) != null) {
+                            viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = ""
+                        }
+                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                .isEnabled = true
+                    }
+                }
+            })
 
         }
 

@@ -3,6 +3,7 @@ package com.example.branchtechnicalchallenge.listFragment
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -70,7 +71,7 @@ class ListsFragment : Fragment() {
         ).get(ListsViewModel::class.java)
 
 
-        viewModel.lists.value = (database.listsDAO()?.lists as MutableList<Lists>)
+        viewModel.initData(database)
 
 
         binding.listRecycler.layoutManager =
@@ -80,7 +81,7 @@ class ListsFragment : Fragment() {
 
 
         binding.fab.setOnClickListener {
-            val builder = MaterialAlertDialogBuilder(requireContext())
+            val builder = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog)
 
             // dialog title
             builder.setTitle("List Name")
@@ -99,19 +100,20 @@ class ListsFragment : Fragment() {
                 }
             }
 
-            // alert dialog other buttons
-            builder.setNeutralButton("Cancel",null)
 
             // set dialog non cancelable
             builder.setCancelable(false)
-
+            builder.setNeutralButton("Cancel") { _, _ ->
+            }
             // finally, create the alert dialog and show it
             val dialog = builder.create()
 
             dialog.show()
 
+
             // initially disable the positive button
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
 
             // edit text text change listener
             textInputEditText?.addTextChangedListener(object : TextWatcher {
@@ -162,7 +164,6 @@ private fun getEditTextLayout(context: Context): ConstraintLayout {
             8
     )
     textInputLayout.layoutParams = layoutParams
-    textInputLayout.hint = "Type list name here"
     textInputLayout.id = View.generateViewId()
     textInputLayout.tag = "textInputLayoutTag"
 

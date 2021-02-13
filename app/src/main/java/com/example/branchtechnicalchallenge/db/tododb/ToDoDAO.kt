@@ -21,9 +21,5 @@ interface ToDoDAO {
 
     @Query("SELECT * FROM todos_table WHERE list = :id")
     fun getTodoForList(id: Long): List<ToDo?>
-    
-//    @get:Query("SELECT * FROM todos_table")
-//    val ToDo: MutableList<ToDo>?
-
 
 }

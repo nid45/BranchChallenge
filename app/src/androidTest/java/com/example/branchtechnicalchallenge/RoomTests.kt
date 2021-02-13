@@ -40,7 +40,7 @@ class SimpleEntityReadWriteTest {
         db.close()
     }
 
-    @Test
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun writeListAndReadInList() {
         val list = Lists("test list", System.currentTimeMillis())
@@ -51,7 +51,7 @@ class SimpleEntityReadWriteTest {
         }
     }
 
-    @Test
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun testUpdate() {
         val list = Lists("test list", System.currentTimeMillis())
@@ -63,7 +63,7 @@ class SimpleEntityReadWriteTest {
     }
 
 
-    @Test
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun testDelete() {
         val list = Lists("test list", System.currentTimeMillis())
@@ -83,7 +83,22 @@ class SimpleEntityReadWriteTest {
         }
     }
 
-    @Test
+    @Test(timeout = 100)
+    @Throws(Exception::class)
+    fun testGetAllLists() {
+        val list = Lists("test list", System.currentTimeMillis())
+        val list2 = Lists("test list2", System.currentTimeMillis())
+        list.uid = listDao.addList(list)
+        list2.uid= listDao.addList(list2)
+        var lists = listDao.lists
+
+        if (lists != null) {
+            assertEquals(2, lists.size)
+        }
+
+    }
+
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun writeListAndToDo() {
         val list = Lists("test list", System.currentTimeMillis())
@@ -97,7 +112,7 @@ class SimpleEntityReadWriteTest {
         }
     }
 
-    @Test
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun testUpdateTodo() {
         val list = Lists("test list", System.currentTimeMillis())
@@ -114,9 +129,26 @@ class SimpleEntityReadWriteTest {
     }
 
 
-    @Test
+    @Test(timeout = 100)
     @Throws(Exception::class)
     fun testDeleteTodo() {
+        val list = Lists("test list", System.currentTimeMillis())
+        val list2 = Lists("test list2", System.currentTimeMillis())
+        list.uid = listDao.addList(list)
+        list2.uid = listDao.addList(list2)
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
+        ToDo("test todo", "test desc", System.currentTimeMillis(), list2.uid, false)
+
+        val lists1 = todoDao.getTodoForList(list.uid)
+        assertEquals(2, lists1.size)
+        val lists2 = todoDao.getTodoForList(list2.uid)
+        assertEquals(1, lists2.size)
+    }
+
+    @Test(timeout = 100)
+    @Throws(Exception::class)
+    fun testGetTodosForList() {
         val list = Lists("test list", System.currentTimeMillis())
         val list2 = Lists("test list2", System.currentTimeMillis())
         var uid1 = listDao.addList(list)

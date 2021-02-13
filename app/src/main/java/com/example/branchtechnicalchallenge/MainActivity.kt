@@ -25,10 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (db != null) {
-            if (db.isOpen()) {
-                db.close()
-            }
+        if (db.isOpen) {
+            db.close()
         }
     }
     

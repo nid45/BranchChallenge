@@ -2,8 +2,11 @@ package com.example.branchtechnicalchallenge.listFragment.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -70,17 +73,21 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
 
             itemView.findViewById<TextView>(R.id.edit).setOnClickListener {
 
-                val builder = MaterialAlertDialogBuilder(context)
+                val builder = MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)
 
                 // dialog title
                 builder.setTitle("Edit List Name")
 
-                // dialog message view
                 val constraintLayout = context.let { it1 -> getEditTextLayout(it1) }
                 builder.setView(constraintLayout)
 
+
+
                 val textInputLayout = constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
                 val textInputEditText = constraintLayout.findViewWithTag<TextInputEditText>("textInputEditTextTag")
+                textInputEditText.text = SpannableStringBuilder(list.title)
+
+
 
                 // alert dialog positive button
                 builder.setPositiveButton("Submit"){ _, _ -> //set what should happen when negative button is clicked
@@ -90,19 +97,25 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                     }
                 }
 
-                // alert dialog other buttons
-                builder.setNeutralButton("Cancel",null)
-
-                // set dialog non cancelable
+                builder.setNeutralButton("Cancel") { _, _ ->
+                }
                 builder.setCancelable(false)
-
-                // finally, create the alert dialog and show it
                 val dialog = builder.create()
+
 
                 dialog.show()
 
-                // initially disable the positive button
                 dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+                if (textInputLayout.editText.toString().equals("")) {
+                    textInputLayout.error = "List Name is required."
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                        .isEnabled = false
+                }else{
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                            .isEnabled = true
+                }
 
                 // edit text text change listener
                 textInputEditText?.addTextChangedListener(object : TextWatcher {
@@ -152,7 +165,6 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                     8
             )
             textInputLayout.layoutParams = layoutParams
-            textInputLayout.hint = "Type new list name here"
             textInputLayout.id = View.generateViewId()
             textInputLayout.tag = "textInputLayoutTag"
 
