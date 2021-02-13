@@ -162,7 +162,7 @@ class ListsFragment : Fragment() {
     }
 
 
-// get edit text layout
+// get edit text dialog
 private fun getEditTextLayout(context: Context): ConstraintLayout {
     val constraintLayout = ConstraintLayout(context)
     val layoutParams = ConstraintLayout.LayoutParams(
