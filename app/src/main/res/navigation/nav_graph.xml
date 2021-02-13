@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/FirstFragment">
-
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.branchtechnicalchallenge.listFragment.ListsFragment"
@@ -28,4 +27,5 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
+
 </navigation>
