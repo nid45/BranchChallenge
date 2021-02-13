@@ -32,6 +32,11 @@ class TodoAdapter(var todos: MutableList<ToDo>,
         var selectedList: HashMap<ToDo, Int> = HashMap()
     }
 
+    fun removeAt(position: Int) {
+        this.viewModel.deleteTodo(todos.get(position))
+        notifyItemRemoved(position)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.todo_item_card, parent, false)
         return TodoViewHolder(view)
@@ -47,6 +52,8 @@ class TodoAdapter(var todos: MutableList<ToDo>,
 
 
     class TodoViewHolder(var view: View): RecyclerView.ViewHolder(view.rootView) {
+
+
 
         @SuppressLint("SetTextI18n")
         fun bind(todo: ToDo, context: Context, viewModel: TodoViewModel, position: Int, activity: Activity, binding: FragmentTodoBinding) {
@@ -72,7 +79,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                 builder.setView(viewdialog)
                 var dialog = builder.create()
                 dialog.show()
-// TODO: 2/12/21 edittext turns blue when selected 
+// TODO: 2/12/21 edittext turns blue when selected
                 viewdialog.findViewById<TextView>(R.id.edit_dialog_title).text = todo.title
                 viewdialog.findViewById<EditText>(R.id.description).text = SpannableStringBuilder(todo.description)
                 if (todo.completed) {
@@ -130,7 +137,7 @@ class TodoAdapter(var todos: MutableList<ToDo>,
 
             itemView.setOnLongClickListener {
                 if (!todo.completed) {
-                    AlertDialog.Builder(context)
+                    MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)
                             .setTitle("Mark item as completed")
                             .setPositiveButton("Yes") { _, _ ->
                                 todo.completed = true

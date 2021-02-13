@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.branchtechnicalchallenge.MainActivity.Companion.db
@@ -20,6 +21,7 @@ import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.data.ToDo
 import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.db.Database
+import com.example.branchtechnicalchallenge.helpers.SwipeToDeleteCallback
 import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter
 import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter.Companion.selectedList
 import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
@@ -28,7 +30,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * A simple [Fragment] subclass for the page that will display the to do items in a list
  */
 class ToDoFragment : Fragment() {
     lateinit var todoViewModelFactory: TodoViewModelFactory
@@ -67,6 +69,17 @@ class ToDoFragment : Fragment() {
                 LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
         binding.todoRecycler.adapter = adapter
+
+        val swipeHandler = object : SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = binding.todoRecycler.adapter as TodoAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.todoRecycler)
+
+
 
 
         binding.delete.setOnClickListener {

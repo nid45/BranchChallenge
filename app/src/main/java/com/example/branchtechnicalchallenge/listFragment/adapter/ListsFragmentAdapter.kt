@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -35,6 +36,13 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
         return ListViewHolder(view)
     }
 
+
+    fun removeAt(position: Int) {
+        this.viewModel.deleteLists(lists.get(position), position)
+        notifyItemRemoved(position)
+    }
+
+
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         holder.bind(lists[position], contextin, viewModel, position, binding)
     }
@@ -54,24 +62,13 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
             itemView.findViewById<TextView>(R.id.time).text = "Created " + time
 
 
-            itemView.setOnLongClickListener{
-                AlertDialog.Builder(context)
-                        .setTitle("Are you sure you want to delete this list?")
-                        .setPositiveButton("Yes"){ _, _ ->
-                            viewModel.deleteLists(list, position)
-                            binding.listRecycler.adapter?.notifyDataSetChanged()
-                        }
-                        .create().show()
-                return@setOnLongClickListener true
-            }
-
             itemView.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putSerializable("list", list)
                 view.findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
             }
 
-            itemView.findViewById<TextView>(R.id.edit).setOnClickListener {
+            itemView.findViewById<ImageView>(R.id.edit).setOnClickListener {
 
                 val builder = MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)
 
@@ -97,8 +94,7 @@ class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context
                     }
                 }
 
-                builder.setNeutralButton("Cancel") { _, _ ->
-                }
+                builder.setNeutralButton("Cancel") { _, _ -> }
                 builder.setCancelable(false)
                 val dialog = builder.create()
 

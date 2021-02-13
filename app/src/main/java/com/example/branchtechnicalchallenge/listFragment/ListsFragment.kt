@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.branchtechnicalchallenge.MainActivity.Companion.db
@@ -23,9 +24,11 @@ import com.example.branchtechnicalchallenge.R
 import com.example.branchtechnicalchallenge.data.Lists
 import com.example.branchtechnicalchallenge.databinding.FragmentListsBinding
 import com.example.branchtechnicalchallenge.db.Database
+import com.example.branchtechnicalchallenge.helpers.SwipeToDeleteCallback
 import com.example.branchtechnicalchallenge.listFragment.adapter.ListsFragmentAdapter
 import com.example.branchtechnicalchallenge.listFragment.listsViewModelFactory.ListsViewModelFactory
 import com.example.branchtechnicalchallenge.listFragment.viewModel.ListsViewModel
+import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -79,14 +82,22 @@ class ListsFragment : Fragment() {
         val adapter = context?.let { ListsFragmentAdapter(viewModel.lists.value!!, it, viewModel, binding) }
         binding.listRecycler.adapter = adapter
 
+        val swipeHandler = object : SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = binding.listRecycler.adapter as ListsFragmentAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.listRecycler)
+
+
 
         binding.fab.setOnClickListener {
             val builder = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog)
 
-            // dialog title
             builder.setTitle("List Name")
 
-            // dialog message view
             val constraintLayout = context?.let { it1 -> getEditTextLayout(it1) }
             builder.setView(constraintLayout)
 
@@ -101,11 +112,8 @@ class ListsFragment : Fragment() {
             }
 
 
-            // set dialog non cancelable
-            builder.setCancelable(false)
-            builder.setNeutralButton("Cancel") { _, _ ->
-            }
-            // finally, create the alert dialog and show it
+            builder.setNeutralButton("Cancel") { _, _ -> }
+
             val dialog = builder.create()
 
             dialog.show()
