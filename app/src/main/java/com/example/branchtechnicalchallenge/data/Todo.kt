@@ -19,5 +19,5 @@ class ToDo(
         var list: Long,
         @ColumnInfo(name = "completed")
         var completed: Boolean) : Serializable {
-    @PrimaryKey(autoGenerate = true) var uid = 1L
+    @PrimaryKey(autoGenerate = true) var uid = 0L
 }

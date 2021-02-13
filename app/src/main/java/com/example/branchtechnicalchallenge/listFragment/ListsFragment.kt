@@ -76,6 +76,9 @@ class ListsFragment : Fragment() {
 
         viewModel.initData(database)
 
+        if(viewModel.lists.value?.size != 0){
+            binding.emptyState.visibility = View.INVISIBLE
+        }
 
         binding.listRecycler.layoutManager =
                 LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -86,6 +89,9 @@ class ListsFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val adapter = binding.listRecycler.adapter as ListsFragmentAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
+                if(viewModel.lists.value?.size == 0){
+                    binding.emptyState.visibility = View.VISIBLE
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
@@ -104,10 +110,12 @@ class ListsFragment : Fragment() {
             val textInputLayout = constraintLayout?.findViewWithTag<TextInputLayout>("textInputLayoutTag")
             val textInputEditText = constraintLayout?.findViewWithTag<TextInputEditText>("textInputEditTextTag")
 
+
             // alert dialog positive button
             builder.setPositiveButton("Submit"){ _, _ -> //set what should happen when negative button is clicked
                 if (textInputEditText != null) {
                     viewModel.createList(textInputEditText.text.toString())
+                    binding.emptyState.visibility = View.INVISIBLE
                 }
             }
 

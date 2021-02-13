@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
+
 class TodoViewModel(application: Application, var todoDatabase: Database, var binding: FragmentTodoBinding) : AndroidViewModel(application) {
 
     val allToDoItems = MutableLiveData<MutableList<ToDo>>()

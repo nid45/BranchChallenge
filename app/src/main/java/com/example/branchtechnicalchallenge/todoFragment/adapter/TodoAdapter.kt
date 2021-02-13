@@ -28,10 +28,6 @@ class TodoAdapter(var todos: MutableList<ToDo>,
                   var activity: Activity,
                   var binding: FragmentTodoBinding ): RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
-    companion object {
-        var selectedList: HashMap<ToDo, Int> = HashMap()
-    }
-
     fun removeAt(position: Int) {
         this.viewModel.deleteTodo(todos.get(position))
         notifyItemRemoved(position)
@@ -58,7 +54,9 @@ class TodoAdapter(var todos: MutableList<ToDo>,
         @SuppressLint("SetTextI18n")
         fun bind(todo: ToDo, context: Context, viewModel: TodoViewModel, position: Int, activity: Activity, binding: FragmentTodoBinding) {
             view.findViewById<TextView>(R.id.title).text = todo.title
-            itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked = false
+            if(todo.completed) {
+                itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked = true
+            }
             if(todo.completed){
                 itemView.findViewById<TextView>(R.id.status).text = "Completed"
             } else{
@@ -67,9 +65,11 @@ class TodoAdapter(var todos: MutableList<ToDo>,
             }
 
 
-           itemView.findViewById<CheckBox>(R.id.isCompleted).setOnCheckedChangeListener { buttonView, isChecked ->
-               selectedList.put(todo, position)
-           }
+            itemView.findViewById<CheckBox>(R.id.isCompleted).setOnCheckedChangeListener { _, _ ->
+                todo.completed = itemView.findViewById<CheckBox>(R.id.isCompleted).isChecked
+            }
+
+
 
             itemView.setOnClickListener {
                 val builder = MaterialAlertDialogBuilder(context,  R.style.ThemeOverlay_App_MaterialAlertDialog)

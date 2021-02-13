@@ -14,5 +14,4 @@ class Lists(
         var timecreated: Long
     ) : Serializable {
     @PrimaryKey(autoGenerate = true) var uid = 0L
-
 }

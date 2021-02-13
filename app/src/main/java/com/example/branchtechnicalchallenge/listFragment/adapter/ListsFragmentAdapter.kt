@@ -31,11 +31,11 @@ import java.util.*
 
 class ListsFragmentAdapter(var lists: MutableList<Lists>, var contextin: Context, var viewModel: ListsViewModel, var binding: FragmentListsBinding): RecyclerView.Adapter<ListsFragmentAdapter.ListViewHolder>() {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_item_view, parent, false)
         return ListViewHolder(view)
     }
-
 
     fun removeAt(position: Int) {
         this.viewModel.deleteLists(lists.get(position), position)

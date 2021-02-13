@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import com.example.branchtechnicalchallenge.databinding.FragmentTodoBinding
 import com.example.branchtechnicalchallenge.db.Database
 import com.example.branchtechnicalchallenge.helpers.SwipeToDeleteCallback
 import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter
-import com.example.branchtechnicalchallenge.todoFragment.adapter.TodoAdapter.Companion.selectedList
 import com.example.branchtechnicalchallenge.todoFragment.viewModel.TodoViewModel
 import com.example.branchtechnicalchallenge.todoFragment.todoViewModelFactory.TodoViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -59,11 +57,17 @@ class ToDoFragment : Fragment() {
                 todoViewModelFactory
         ).get(TodoViewModel::class.java)
 
+
+        //title of page is the name of the list
         binding.todoTitle.text = list.title
 
         viewModel.initData(database, list)
 
-        var adapter = context?.let { activity?.let { it1 -> TodoAdapter(viewModel.allToDoItems.value!!, it, viewModel, it1, binding) } }
+        if(viewModel.allToDoItems.value?.size != 0){
+            binding.emptyState.visibility = View.INVISIBLE
+        }
+
+        val adapter = context?.let { activity?.let { it1 -> TodoAdapter(viewModel.allToDoItems.value!!, it, viewModel, it1, binding) } }
 
         binding.todoRecycler.layoutManager =
                 LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -74,19 +78,13 @@ class ToDoFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val adapter = binding.todoRecycler.adapter as TodoAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
+                if(viewModel.allToDoItems.value?.size == 0){
+                    binding.emptyState.visibility = View.VISIBLE
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(binding.todoRecycler)
-
-
-
-
-        binding.delete.setOnClickListener {
-            for(todo in selectedList ){
-                viewModel.deleteTodo(todo.key)
-            }
-        }
 
 
         binding.todoFab.setOnClickListener {
@@ -108,12 +106,12 @@ class ToDoFragment : Fragment() {
                 dialog.dismiss()
             }
             viewdialog.findViewById<RadioButton>(R.id.incomplete).isChecked = true
-            context?.let { it1 ->
+            context?.let {
                 viewdialog.findViewById<TextView>(R.id.save).setOnClickListener {
                     if(viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString() == ""){
                         viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = "List Name is required."
                     }else {
-                        viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { group, checkedId -> // checkedId is the RadioButton selected
+                        viewdialog.findViewById<RadioGroup>(R.id.radio_group).setOnCheckedChangeListener { _, checkedId -> // checkedId is the RadioButton selected
                             when (checkedId) {
                                 R.id.completed -> {
                                     complete = true
@@ -123,10 +121,13 @@ class ToDoFragment : Fragment() {
                                 }
                             }
                         }
-                        var desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
-                        var title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
-                        var todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
+                        val desc = viewdialog.findViewById<EditText>(R.id.description).text.toString()
+                        val title = viewdialog.findViewById<EditText>(R.id.edit_dialog_title).text.toString()
+                        val todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
                         viewModel.createTodo(todo)
+                        if(viewModel.allToDoItems.value?.size != 0){
+                            binding.emptyState.visibility = View.INVISIBLE
+                        }
                         view.findViewById<RecyclerView>(R.id.todo_recycler).adapter?.notifyDataSetChanged()
                         dialog.dismiss()
                     }
@@ -150,9 +151,6 @@ class ToDoFragment : Fragment() {
                         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
                                 .isEnabled = false
                     }else{
-                        if (viewdialog.findViewById<EditText>(R.id.edit_dialog_title) != null) {
-                            viewdialog.findViewById<EditText>(R.id.edit_dialog_title).error = ""
-                        }
                         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
                                 .isEnabled = true
                     }
