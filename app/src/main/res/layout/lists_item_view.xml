@@ -49,14 +49,13 @@
 
             <ImageView
                 android:id="@+id/edit"
-                android:layout_width="50dp"
+                android:layout_width="25dp"
                 android:layout_height="40dp"
                 android:clickable="true"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:textAlignment="center"
-                android:src="@drawable/ic_baseline_more_vert_24"
-                android:textSize="18sp"
+                android:src="@drawable/baseline_mode_edit_black_18dp"
                 app:tint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
