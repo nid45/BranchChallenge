@@ -176,16 +176,12 @@ class SimpleEntityReadWriteTest {
         ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
         ToDo("test todo", "test desc", System.currentTimeMillis(), list.uid, false)
         listDao.deleteLists(list)
-        val listOfLists = listDao.lists
-        val listOfToDos = todoDao.getTodoForList(list.uid)
-        if (listOfLists != null) {
-            assertEquals(0, listOfLists.size)
-        }
-        if (listOfLists != null) {
-            for(l in listOfLists){
-                assertEquals("test list2".trim(), l.title.trim())
-            }
-        }
+        var listOfToDos: MutableList<ToDo>
+        var listOfLists: MutableList<Lists> = listDao.lists as MutableList<Lists>
+        listOfToDos = todoDao.getTodoForList(list.uid) as MutableList<ToDo>
+        assertEquals(true, listOfLists!!.isEmpty())
+        assertEquals(true, listOfToDos.isEmpty())
+        
     }
 
 
