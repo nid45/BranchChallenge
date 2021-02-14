@@ -1,8 +1,11 @@
 package com.example.branchtechnicalchallenge.listFragment
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +16,7 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -172,6 +176,7 @@ class ListsFragment : Fragment() {
 //companion object for dialog layout, is in companion object for use in adapter
     companion object {
         // get edit text dialog
+        @SuppressLint("UseCompatLoadingForColorStateLists")
         fun getEditTextLayout(context: Context): ConstraintLayout {
             val constraintLayout = ConstraintLayout(context)
             val layoutParams = ConstraintLayout.LayoutParams(
@@ -197,6 +202,9 @@ class ListsFragment : Fragment() {
             val textInputEditText = TextInputEditText(context)
             textInputEditText.id = View.generateViewId()
             textInputEditText.tag = "textInputEditTextTag"
+            textInputEditText.setTextColor(Color.WHITE)
+            textInputEditText.backgroundTintList = ContextCompat.getColorStateList(context, R.color.white)
+
 
             textInputLayout.addView(textInputEditText)
 

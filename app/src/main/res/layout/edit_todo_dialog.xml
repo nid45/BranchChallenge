@@ -23,6 +23,7 @@
         android:layout_marginEnd="20dp"
         android:backgroundTint="@color/white"
         android:ellipsize="end"
+        android:textColor="@color/white"
         android:fontFamily="@font/lato"
         android:text=""
         android:textSize="24sp"
@@ -54,7 +55,8 @@
         android:layout_marginEnd="20dp"
         android:fontFamily="@font/lato"
         android:hint="Describe your todo here"
-        android:textSize="14sp"
+        android:textSize="18sp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/desc_title" />

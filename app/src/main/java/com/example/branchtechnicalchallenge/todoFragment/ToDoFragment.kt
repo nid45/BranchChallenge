@@ -119,7 +119,7 @@ class ToDoFragment : Fragment() {
                     val todo = ToDo(title, desc, System.currentTimeMillis(), list.uid, complete)
                     viewModel.createTodo(todo)
                     if(viewModel.allToDoItems.value?.size != 0){
-                        binding.emptyState.visibility = View.INVISIBLE
+                        binding.emptyState.visibility = View.GONE
                     }
                     view?.findViewById<RecyclerView>(R.id.todo_recycler)?.adapter?.notifyDataSetChanged()
                 }
@@ -129,6 +129,8 @@ class ToDoFragment : Fragment() {
 
         val dialog = builder.create()
         dialog.show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
 
         viewdialog.findViewById<EditText>(R.id.edit_dialog_title)?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
